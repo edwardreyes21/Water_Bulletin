@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:title="@string/settings_min_intake_label"
+        android:key="@string/settings_min_intake_key"
+        android:defaultValue="@string/settings_min_intake_default"/>
+
+</PreferenceScreen>

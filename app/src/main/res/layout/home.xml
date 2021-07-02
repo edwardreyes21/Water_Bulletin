@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeActivity"
+    android:orientation="vertical">
+
+    <!-- Represents the nav bar -->
+    <LinearLayout
+        android:id="@+id/tab_layout"
+        android:background="#5188E1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/NavUnselected"
+            android:id="@+id/alerts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Alerts"
+            android:gravity="center_vertical"
+            tools:ignore="RtlCompat" />
+
+        <TextView
+            style="@style/NavUnselected"
+            android:id="@+id/home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:textStyle="bold"
+            android:text="Home"
+            android:gravity="center_vertical"
+            tools:ignore="RtlCompat" />
+
+        <TextView
+            style="@style/NavUnselected"
+            android:id="@+id/settings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="Settings"
+            android:gravity="center_vertical"
+            tools:ignore="RtlCompat" />
+
+    </LinearLayout>
+
+    <!-- Represents content of screen -->
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        xmlns:tools="http://schemas.android.com/tools">
+
+        <!-- Shows user's intake and goal intake -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                style="@style/NormalText"
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Intake: "/>
+
+            <TextView
+                style="@style/NormalText"
+                android:id="@+id/current_intake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/progress"
+                android:text="0"/>
+
+            <TextView
+                style="@style/NormalText"
+                android:id="@+id/divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/current_intake"
+                android:text="ml / "/>
+
+            <TextView
+                style="@style/NormalText"
+                android:id="@+id/goal_intake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/divider"
+                android:text="2000"/>
+
+            <TextView
+                style="@style/NormalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/goal_intake"
+                android:text="ml"/>
+
+        </LinearLayout>
+
+        <!-- Shows image representing bottle of water -->
+        <ImageView
+            android:id="@+id/bottle_fullness"
+            android:layout_width="250dp"
+            android:layout_height="350dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/cupofwater_100percent"
+            android:layout_marginTop="60dp" />
+
+        <!-- Button that will increase user's daily intake -->
+        <Button
+            android:id="@+id/increase_intake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="Increase 500 ml"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:background="#06275C"
+            android:layout_below="@id/bottle_fullness"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

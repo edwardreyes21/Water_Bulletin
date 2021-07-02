@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Water Notifier</string>
+    <string name="settings_menu_item">Settings</string>
+    <string name="settings_title">User Preferences</string>
+
+    <string name="settings_min_intake_label">Minimum Intake</string>
+    <string name="settings_min_intake_key" translatable="false">min_intake</string>
+    <string name="settings_min_intake_default" translatable="false">2000</string>
+</resources>
