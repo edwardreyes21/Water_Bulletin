@@ -1,9 +1,27 @@
 <resources>
+    <!-- Activity Names -->
     <string name="app_name">Water Notifier</string>
     <string name="settings_menu_item">Settings</string>
     <string name="settings_title">User Preferences</string>
 
+    <!-- Minimum Intake -->
     <string name="settings_min_intake_label">Minimum Intake</string>
-    <string name="settings_min_intake_key" translatable="false">min_intake</string>
-    <string name="settings_min_intake_default" translatable="false">2000</string>
+    <string name="settings_min_intake_key" translatable="false">min_intake_key</string>
+
+    <!-- Maximum Intake -->
+    <string name="settings_max_intake_label">Maximum Intake</string>
+    <string name="settings_max_intake_key" translatable="false">max_intake_key</string>
+
+    <!-- Push Notifications -->
+    <string name="settings_push_notification_label">Push Notifications</string>
+    <string name="settings_push_notification_key" translatable="false">push_notification</string>
+    <string name="settings_push_notification_default" translatable="false">false</string>
+
+    <!-- Frequency of Push Notifications -->
+    <string name="settings_notification_frequency_label">Frequency</string>
+    <string name="settings_notification_frequency_key" translatable="false">frequency_key</string>
+    <string name="settings_notification_frequency_default" translatable="false">1</string>
+
+    <!-- Current Intake -->
+    <string name="saved_current_intake"></string>
 </resources>

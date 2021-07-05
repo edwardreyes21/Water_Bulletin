@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="settings_max_intake_default" translatable="false">5000</integer>
+    <integer name="settings_min_intake_default" translatable="false">2000</integer>
+</resources>
