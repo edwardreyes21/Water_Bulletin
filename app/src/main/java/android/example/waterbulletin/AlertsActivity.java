@@ -1,4 +1,4 @@
-package android.example.waternotifier;
+package android.example.waterbulletin;
 
 import androidx.appcompat.app.AppCompatActivity;
 

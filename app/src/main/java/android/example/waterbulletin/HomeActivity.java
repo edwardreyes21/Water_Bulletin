@@ -1,11 +1,10 @@
-package android.example.waternotifier;
+package android.example.waterbulletin;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,8 +13,8 @@ import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
 
-    // How much water (in milliliters) the user has drank today
-    public int current_intake = 0;
+    public int current_intake = 0; // How much water (in milliliters) the user has drank today
+    public int intake_stage = 0; // What stage (1-4) water the cup has left
 
     public void updateCurrentIntake() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
@@ -86,23 +85,24 @@ public class HomeActivity extends AppCompatActivity {
                 ImageView cup_of_water = findViewById(R.id.bottle_fullness);
                 TextView current = findViewById(R.id.current_intake);
 
+                // Gets the max intake using Shared Preferences
                 SharedPreferences max_intake_preference = getSharedPreferences(
                         getString(R.string.settings_max_intake_key), MODE_PRIVATE);
 
-                current_intake = sharedPreferences.getInt(
-                        "" + R.string.saved_current_intake, 0);
-                current_intake += 500;
-                current.setText("" + current_intake);
-
                 // Reads the max intake key using Shared Preferences
-
                 int default_max_intake = getResources().getInteger(
                         R.integer.settings_max_intake_default);
                 int max_intake = max_intake_preference.getInt(getString(
                         R.string.settings_max_intake_key), default_max_intake);
 
-                // Writes the newly updated current intake to saved current intake key
+                // Updates the current intake when the 'increase' button is clicked
+                // Also updates the progress text on the top of the screen
+                current_intake = sharedPreferences.getInt(
+                        "" + R.string.saved_current_intake, 0);
+                current_intake += 500;
+                current.setText("" + current_intake);
 
+                // Writes the newly updated current intake to saved current intake key
                 SharedPreferences.Editor current_intake_editor = sharedPreferences.edit();
                 current_intake_editor.putInt("" + R.string.saved_current_intake, current_intake);
                 current_intake_editor.apply();

@@ -1,6 +1,6 @@
 <resources>
     <!-- Activity Names -->
-    <string name="app_name">Water Notifier</string>
+    <string name="app_name">Water Bulletin</string>
     <string name="settings_menu_item">Settings</string>
     <string name="settings_title">User Preferences</string>
 

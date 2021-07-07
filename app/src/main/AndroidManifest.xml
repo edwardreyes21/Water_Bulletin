@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="android.example.waternotifier">
+    package="android.example.waterbulletin">
 
     <application
         android:allowBackup="true"
@@ -10,12 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AlertsActivity"></activity>
+            android:name="android.example.waterbulletin.AlertsActivity"></activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="android.example.waterbulletin.SettingsActivity"
             android:label="@string/settings_title"></activity>
         <activity
-            android:name=".HomeActivity">
+            android:name="android.example.waterbulletin.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
