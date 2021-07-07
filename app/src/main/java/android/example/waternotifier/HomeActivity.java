@@ -16,12 +16,44 @@ public class HomeActivity extends AppCompatActivity {
 
     // How much water (in milliliters) the user has drank today
     public int current_intake = 0;
-    public int max_intake = 5000;
+
+    public void updateCurrentIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // Resets the progress text to 0ml
+        TextView current = findViewById(R.id.current_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
+    }
+
+    public void resetIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor saved_current_intake_editor = sharedPreferences.edit();
+        saved_current_intake_editor.putInt("" + R.string.saved_current_intake, 0);
+        saved_current_intake_editor.apply();
+
+       // Resets the progress text to 0ml
+        TextView current = findViewById(R.id.current_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // Every time the activity is created, update the current intake so that it shows
+        // the proper value
+        updateCurrentIntake();
+
+        // Catches an intent specifically designed for resetting the intake
+        Intent intent = getIntent();
+        int data = intent.getIntExtra("resetIntake", 0);
+        if (data == 1) {
+            resetIntake();
+        }
 
         // If user taps on 'Alerts', send them to 'Alerts' page
         TextView alerts = findViewById(R.id.alerts);
@@ -56,9 +88,8 @@ public class HomeActivity extends AppCompatActivity {
 
                 SharedPreferences max_intake_preference = getSharedPreferences(
                         getString(R.string.settings_max_intake_key), MODE_PRIVATE);
-                SharedPreferences saved_current_intake = getPreferences(MODE_PRIVATE);
 
-                current_intake = saved_current_intake.getInt(
+                current_intake = sharedPreferences.getInt(
                         "" + R.string.saved_current_intake, 0);
                 current_intake += 500;
                 current.setText("" + current_intake);
@@ -72,7 +103,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 // Writes the newly updated current intake to saved current intake key
 
-                SharedPreferences.Editor current_intake_editor = saved_current_intake.edit();
+                SharedPreferences.Editor current_intake_editor = sharedPreferences.edit();
                 current_intake_editor.putInt("" + R.string.saved_current_intake, current_intake);
                 current_intake_editor.apply();
 

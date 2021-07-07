@@ -9,11 +9,13 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -22,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
 
         // If user taps on 'Alerts', send them to 'Alerts' page
         TextView alerts = findViewById(R.id.alerts);
@@ -39,6 +42,16 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button reset_intake = (Button) findViewById(R.id.reset_intake);
+        reset_intake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SettingsActivity.this, HomeActivity.class);
+                intent.putExtra("resetIntake", 1);
                 startActivity(intent);
             }
         });

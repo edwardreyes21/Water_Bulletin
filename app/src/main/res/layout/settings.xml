@@ -58,21 +58,23 @@
         android:layout_width="match_parent"
         android:background="@color/white">
 
-        <!--
-        <androidx.fragment.app.FragmentContainerView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="android.example.waternotifier.SettingsActivity$UserPreferenceFragment"
-            android:id="@+id/preference_fragment"/>
-        -->
-
         <FrameLayout
             android:name="android.example.waternotifier.SettingsActivity$UserPreferenceFragment"
             android:id="@+id/settings_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </FrameLayout>
+
+        <Button
+            android:id="@+id/reset_intake"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:background="#FF0000"
+            android:text="Reset Intake"
+            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"/>
 
     </RelativeLayout>
 
