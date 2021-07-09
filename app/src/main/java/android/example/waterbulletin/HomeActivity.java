@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,8 +14,7 @@ import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
 
-    public int current_intake = 0; // How much water (in milliliters) the user has drank today
-    public int intake_stage = 0; // What stage (1-4) water the cup has left
+    public double current_intake = 0; // How much water (in milliliters) the user has drank today
 
     public void updateCurrentIntake() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
@@ -25,6 +25,33 @@ public class HomeActivity extends AppCompatActivity {
         current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
     }
 
+    public void updateCurrentImage() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+
+        // Gets the minimum intake set by user (or if not set, the default)
+        int default_min_intake = getResources().getInteger(
+                R.integer.settings_min_intake_default);
+        double min_intake = sharedPreferences.getInt(getString
+                (R.string.settings_min_intake_key), default_min_intake);
+
+        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
+
+        // Based on how much the user has drank compared to their minimum intake,
+        // updates the cup image
+        if (current_intake / min_intake <= 0.25) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
+        }
+        else if (current_intake / min_intake <= 0.50) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_66percent);
+        }
+        else if (current_intake / min_intake <= 0.75) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_33percent);
+        } else if (current_intake / min_intake <= 1) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_0percent);
+        }
+    }
+
     public void resetIntake() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -32,9 +59,17 @@ public class HomeActivity extends AppCompatActivity {
         saved_current_intake_editor.putInt("" + R.string.saved_current_intake, 0);
         saved_current_intake_editor.apply();
 
-       // Resets the progress text to 0ml
+        SharedPreferences.Editor image_progress_editor = sharedPreferences.edit();
+        image_progress_editor.putInt("" + R.string.saved_image_progress, 0);
+        image_progress_editor.apply();
+
+       // Resets the progress text and image to 0ml
         TextView current = findViewById(R.id.current_intake);
-        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
+        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake,
+                0));
+
+        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
+        cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
     }
 
     @Override
@@ -45,7 +80,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // Every time the activity is created, update the current intake so that it shows
         // the proper value
+        current_intake = sharedPreferences.getInt(
+                "" + R.string.saved_current_intake, 0);
         updateCurrentIntake();
+        updateCurrentImage();
 
         // Catches an intent specifically designed for resetting the intake
         Intent intent = getIntent();
@@ -82,7 +120,6 @@ public class HomeActivity extends AppCompatActivity {
             // Assume that for now, the minimum intake is 2000 ml
             // We'll change the minimum later, as well as add an algorithm to calculate it
             public void onClick(View v) {
-                ImageView cup_of_water = findViewById(R.id.bottle_fullness);
                 TextView current = findViewById(R.id.current_intake);
 
                 // Gets the max intake using Shared Preferences
@@ -100,11 +137,10 @@ public class HomeActivity extends AppCompatActivity {
                 current_intake = sharedPreferences.getInt(
                         "" + R.string.saved_current_intake, 0);
                 current_intake += 500;
-                current.setText("" + current_intake);
 
                 // Writes the newly updated current intake to saved current intake key
                 SharedPreferences.Editor current_intake_editor = sharedPreferences.edit();
-                current_intake_editor.putInt("" + R.string.saved_current_intake, current_intake);
+                current_intake_editor.putInt("" + R.string.saved_current_intake, (int) current_intake);
                 current_intake_editor.apply();
 
                 // Shows a warning when the user has drank more than their maximum intake
@@ -115,20 +151,9 @@ public class HomeActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                 }
 
-                // Updates the image based on current intake
-                // Later on, we'll update it so that it updates based on current and maximum intakes
-                if (current_intake == 500) {
-                    cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
-                }
-                else if (current_intake == 1000) {
-                    cup_of_water.setImageResource(R.drawable.cupofwater_66percent);
-                }
-                else if (current_intake == 1500) {
-                    cup_of_water.setImageResource(R.drawable.cupofwater_33percent);
-                }
-                else if (current_intake == 2000) {
-                    cup_of_water.setImageResource(R.drawable.cupofwater_0percent);
-                }
+                // Updates progress text and image
+                updateCurrentIntake();
+                updateCurrentImage();
             }
         });
 
