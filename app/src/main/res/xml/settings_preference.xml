@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:title="Intake">
 
         <SeekBarPreference
-            android:title="@string/settings_min_intake_label"
+            android:id="@+id/min_intake_seekbar"
+            app:title="@string/settings_min_intake_label"
             android:key="@string/settings_min_intake_key"
-            android:defaultValue="@integer/settings_min_intake_default"
+            app:defaultValue="@integer/settings_min_intake_default"
             android:max="@integer/settings_max_intake_default"
-            android:summary="The least you should drink daily" />
+            app:summary="The least you should drink daily"
+            app:adjustable="true"
+            app:showSeekBarValue="true" />
 
         <SeekBarPreference
-            android:title="@string/settings_max_intake_label"
-            android:key="@string/settings_max_intake_key"
-            android:defaultValue="@integer/settings_max_intake_default"
+            app:title="@string/settings_max_intake_label"
+            app:key="@string/settings_max_intake_key"
+            app:defaultValue="@integer/settings_max_intake_default"
             android:max="10000"
-            android:summary="The most you should drink daily"/>
+            app:summary="The most you should drink daily"/>
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Notifications">
+        app:title="Notifications">
 
         <SwitchPreferenceCompat
-            android:title="@string/settings_push_notification_label"
-            android:key="@string/settings_push_notification_key"
-            android:defaultValue="@string/settings_push_notification_default"
-            android:summary="Enables the option of getting push notifications" />
+            app:title="@string/settings_push_notification_label"
+            app:key="@string/settings_push_notification_key"
+            app:defaultValue="@string/settings_push_notification_default"
+            app:summary="Enables the option of getting push notifications" />
 
         <MultiSelectListPreference
-            android:title="@string/settings_notification_frequency_label"
-            android:key="@string/settings_notification_frequency_key"
-            android:defaultValue="@string/settings_notification_frequency_default"
-            android:summary="How often you get a push notification"/>
+            app:title="@string/settings_notification_frequency_label"
+            app:key="@string/settings_notification_frequency_key"
+            app:defaultValue="@string/settings_notification_frequency_default"
+            app:summary="How often you get a push notification"/>
 
     </PreferenceCategory>
 

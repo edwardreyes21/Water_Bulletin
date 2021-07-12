@@ -3,78 +3,113 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".HomeActivity">
 
     <!-- Represents the nav bar -->
     <LinearLayout
         android:id="@+id/tab_layout"
-        android:background="#5188E1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:background="#5188E1"
         android:orientation="horizontal">
 
         <TextView
-            style="@style/NavUnselected"
             android:id="@+id/alerts"
+            style="@style/NavUnselected"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAlignment="center"
             android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
             android:text="Alerts"
-            android:gravity="center_vertical"
-            tools:ignore="RtlCompat" />
-
-        <TextView
-            style="@style/NavUnselected"
-            android:id="@+id/home"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
             android:textAlignment="center"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="Home"
-            android:gravity="center_vertical"
             tools:ignore="RtlCompat" />
 
         <TextView
+            android:id="@+id/home"
             style="@style/NavUnselected"
-            android:id="@+id/settings"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:text="Home"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat" />
+
+        <TextView
+            android:id="@+id/settings"
+            style="@style/NavUnselected"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:text="Settings"
             android:textAlignment="center"
             android:textStyle="bold"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="Settings"
-            android:gravity="center_vertical"
             tools:ignore="RtlCompat" />
 
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/white">
 
-        <FrameLayout
-            android:name="android.example.waternotifier.SettingsActivity$UserPreferenceFragment"
-            android:id="@+id/settings_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/min_intake_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="@string/settings_min_intake_label" />
+
+            <TextView
+                android:id="@+id/min_intake_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/min_intake_label"
+                android:layout_centerHorizontal="true"
+                android:text="How much water to drink every day at a minimum" />
+
+            <SeekBar
+                android:id="@+id/min_intake_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/min_intake_desc"
+                android:max="@integer/settings_max_intake_default"
+                android:min="1000"
+                android:layout_marginTop="10dp"
+                android:progress="@integer/settings_min_intake_default"
+                android:thumb="@color/black" />
+
+            <TextView
+                android:id="@+id/min_intake_seekbar_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/min_intake_seekbar"
+                android:layout_centerHorizontal="true"
+                android:text="2000" />
+
+        </RelativeLayout>
+
 
         <Button
             android:id="@+id/reset_intake"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="30dp"
             android:background="#FF0000"
             android:text="Reset Intake"
-            android:textColor="@color/white"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"/>
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 

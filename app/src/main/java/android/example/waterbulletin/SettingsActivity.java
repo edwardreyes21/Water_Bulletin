@@ -1,13 +1,17 @@
 package android.example.waterbulletin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SeekBarPreference;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -16,7 +20,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
 
         // If user taps on 'Alerts', send them to 'Alerts' page
         TextView alerts = findViewById(R.id.alerts);
@@ -48,22 +53,34 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.settings_container, new UserPreferenceFragment())
-                .commit();
+        int min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key, 2000);
+
+        SeekBar min_intake_seekbar = (SeekBar) findViewById(R.id.min_intake_seekbar);
+        min_intake_seekbar.setProgress(min_intake);
+        Log.v("setProgress", "Min intake: " + min_intake);
+
+        TextView seekbar_progress = (TextView) findViewById(R.id.min_intake_seekbar_progress);
+        seekbar_progress.setText("" + min_intake);
+
+        min_intake_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.v("setProgress", "Seekbar progress: " + progress);
+                SharedPreferences.Editor min_intake_editor = sharedPreferences.edit();
+                min_intake_editor.putInt("" + R.string.settings_min_intake_key, progress);
+                min_intake_editor.apply();
+
+                TextView seekbar_progress = (TextView) findViewById(R.id.min_intake_seekbar_progress);
+                seekbar_progress.setText("" + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
 
     }
 
-    public static class UserPreferenceFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.settings_preference, rootKey);
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-    }
 }

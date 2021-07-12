@@ -18,7 +18,8 @@ public class HomeActivity extends AppCompatActivity {
 
     public void updateCurrentIntake() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
 
         // Resets the progress text to 0ml
         TextView current = findViewById(R.id.current_intake);
@@ -27,16 +28,17 @@ public class HomeActivity extends AppCompatActivity {
 
     public void updateCurrentImage() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
 
         // Gets the minimum intake set by user (or if not set, the default)
         int default_min_intake = getResources().getInteger(
                 R.integer.settings_min_intake_default);
-        double min_intake = sharedPreferences.getInt(getString
-                (R.string.settings_min_intake_key), default_min_intake);
+        double min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key, default_min_intake);
 
         ImageView cup_of_water = findViewById(R.id.bottle_fullness);
 
+        Log.v("updateCurrentImage", "" + current_intake + "/" + min_intake + " = " + current_intake / min_intake);
         // Based on how much the user has drank compared to their minimum intake,
         // updates the cup image
         if (current_intake / min_intake <= 0.25) {
@@ -52,9 +54,25 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    public void updateMinIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Resets the progress text to 0ml
+        TextView current = findViewById(R.id.goal_intake);
+        int new_min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key,
+                0);
+        Log.v("updateMinIntake", "Min intake: " + new_min_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.settings_min_intake_key,
+                0));
+        Log.v("updateMinIntake", "Min intake updated");
+    }
+
     public void resetIntake() {
         // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
         SharedPreferences.Editor saved_current_intake_editor = sharedPreferences.edit();
         saved_current_intake_editor.putInt("" + R.string.saved_current_intake, 0);
         saved_current_intake_editor.apply();
@@ -76,7 +94,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
 
         // Every time the activity is created, update the current intake so that it shows
         // the proper value
@@ -84,6 +103,7 @@ public class HomeActivity extends AppCompatActivity {
                 "" + R.string.saved_current_intake, 0);
         updateCurrentIntake();
         updateCurrentImage();
+        updateMinIntake();
 
         // Catches an intent specifically designed for resetting the intake
         Intent intent = getIntent();
@@ -120,11 +140,9 @@ public class HomeActivity extends AppCompatActivity {
             // Assume that for now, the minimum intake is 2000 ml
             // We'll change the minimum later, as well as add an algorithm to calculate it
             public void onClick(View v) {
-                TextView current = findViewById(R.id.current_intake);
-
                 // Gets the max intake using Shared Preferences
                 SharedPreferences max_intake_preference = getSharedPreferences(
-                        getString(R.string.settings_max_intake_key), MODE_PRIVATE);
+                        getString(R.string.preference_file_key), MODE_PRIVATE);
 
                 // Reads the max intake key using Shared Preferences
                 int default_max_intake = getResources().getInteger(
