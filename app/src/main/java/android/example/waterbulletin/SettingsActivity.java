@@ -62,11 +62,15 @@ public class SettingsActivity extends AppCompatActivity {
         TextView seekbar_progress = (TextView) findViewById(R.id.min_intake_seekbar_progress);
         seekbar_progress.setText("" + min_intake);
 
+        int stepSize = 4;
         min_intake_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.v("setProgress", "Seekbar progress: " + progress);
                 SharedPreferences.Editor min_intake_editor = sharedPreferences.edit();
+
+                progress = (int) Math.round((progress + 99) / 100) * 100;
+                Log.v("setProgress", "Seekbar progress: " + progress);
+
                 min_intake_editor.putInt("" + R.string.settings_min_intake_key, progress);
                 min_intake_editor.apply();
 
