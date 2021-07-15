@@ -11,8 +11,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -22,6 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.settings);
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        updatePushNotifsVisibility();
 
         // If user taps on 'Alerts', send them to 'Alerts' page
         TextView alerts = findViewById(R.id.alerts);
@@ -43,7 +50,9 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        Button reset_intake = (Button) findViewById(R.id.reset_intake);
+        // If user taps on 'Reset Intake', then it sends an intent to HomeActivity
+        // that requests to reset the current intake
+        Button reset_intake = findViewById(R.id.reset_intake);
         reset_intake.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,23 +62,23 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        // Each time the user opens the Settings page, it will update the seekbar progress
+        // to what its saved value is
         int min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key, 2000);
-
-        SeekBar min_intake_seekbar = (SeekBar) findViewById(R.id.min_intake_seekbar);
+        SeekBar min_intake_seekbar = findViewById(R.id.min_intake_seekbar);
         min_intake_seekbar.setProgress(min_intake);
         Log.v("setProgress", "Min intake: " + min_intake);
-
-        TextView seekbar_progress = (TextView) findViewById(R.id.min_intake_seekbar_progress);
+        TextView seekbar_progress = findViewById(R.id.min_intake_seekbar_progress);
         seekbar_progress.setText("" + min_intake);
 
-        int stepSize = 4;
+        // Listener for when the seekbar is updated by the user
         min_intake_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 SharedPreferences.Editor min_intake_editor = sharedPreferences.edit();
 
                 progress = (int) Math.round((progress + 99) / 100) * 100;
-                Log.v("setProgress", "Seekbar progress: " + progress);
+                Log.v("setProgress", "Min Intake Seekbar progress: " + progress);
 
                 min_intake_editor.putInt("" + R.string.settings_min_intake_key, progress);
                 min_intake_editor.apply();
@@ -85,6 +94,76 @@ public class SettingsActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
+        // Updates push notification key if user updates the switch
+        Switch push_notifications = (Switch) findViewById(R.id.push_notifications_switch);
+        push_notifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences.Editor enable_notifs = sharedPreferences.edit();
+                if (isChecked) {
+                    enable_notifs.putBoolean("" + R.string.settings_push_notification_key, true);
+                }
+                else {
+                    enable_notifs.putBoolean("" + R.string.settings_push_notification_key, false);
+                }
+                enable_notifs.apply();
+                updatePushNotifsVisibility();
+            }
+        });
+
+        // Each time the user opens the Settings page, it will update the seekbar progress
+        // to what its saved value is
+        int frequency_value = sharedPreferences.getInt("" + R.string.settings_notification_frequency_key, 1);
+        SeekBar frequency_seekbar = findViewById(R.id.push_notifications_seekbar);
+        frequency_seekbar.setProgress(frequency_value);
+        Log.v("setProgress", "Frequency value: " + frequency_value);
+        TextView frequency_progress = findViewById(R.id.push_notifications_seekbar_progress);
+        frequency_progress.setText("" + frequency_value);
+
+        frequency_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                SharedPreferences.Editor frequency_editor = sharedPreferences.edit();
+                Log.v("setProgress", "Seekbar progress: " + progress);
+                frequency_editor.putInt("" + R.string.settings_notification_frequency_key, progress);
+                frequency_editor.apply();
+
+                TextView seekbar_progress = (TextView) findViewById(R.id.push_notifications_seekbar_progress);
+                seekbar_progress.setText("" + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+    }
+
+    public void updatePushNotifsVisibility() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        RelativeLayout frequency_container = findViewById(
+                R.id.push_notifications_frequency_container);
+        Switch push_notification = findViewById(R.id.push_notifications_switch);
+
+        if (sharedPreferences.getBoolean(
+                "" + R.string.settings_push_notification_key, false)) {
+            Log.v("Push notifications", "True");
+            frequency_container.setVisibility(View.VISIBLE);
+            push_notification.setChecked(true);
+        }
+        else {
+            Log.v("Push notifications", "False");
+            frequency_container.setVisibility(View.INVISIBLE);
+            push_notification.setChecked(false);
+        }
     }
 
 }

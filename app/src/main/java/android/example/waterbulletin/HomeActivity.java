@@ -62,10 +62,10 @@ public class HomeActivity extends AppCompatActivity {
         // Resets the progress text to 0ml
         TextView current = findViewById(R.id.goal_intake);
         int new_min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key,
-                0);
+                2000);
         Log.v("updateMinIntake", "Min intake: " + new_min_intake);
         current.setText("" + sharedPreferences.getInt("" + R.string.settings_min_intake_key,
-                0));
+                2000));
         Log.v("updateMinIntake", "Min intake updated");
     }
 

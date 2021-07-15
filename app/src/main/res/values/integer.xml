@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Intake default -->
     <integer name="settings_max_intake_default" translatable="false">5000</integer>
     <integer name="settings_min_intake_default" translatable="false">2000</integer>
 
+    <!-- Push notification frequency default -->
+    <integer name="settings_min_frequency" translatable="false">1</integer>
+    <integer name="settings_max_frequency" translatable="false">24</integer>
 </resources>
