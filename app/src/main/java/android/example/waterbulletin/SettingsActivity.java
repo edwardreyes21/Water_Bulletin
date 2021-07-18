@@ -1,13 +1,22 @@
 package android.example.waterbulletin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), MODE_PRIVATE);
 
@@ -120,6 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
         TextView frequency_progress = findViewById(R.id.push_notifications_seekbar_progress);
         frequency_progress.setText("" + frequency_value);
 
+        // Listener for when the seekbar is updated by the user
         frequency_seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -155,15 +166,19 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (sharedPreferences.getBoolean(
                 "" + R.string.settings_push_notification_key, false)) {
-            Log.v("Push notifications", "True");
+            Log.v("Shared preferences", "True - Push notification key " +
+                    R.string.settings_push_notification_key);
             frequency_container.setVisibility(View.VISIBLE);
             push_notification.setChecked(true);
         }
         else {
-            Log.v("Push notifications", "False");
+            Log.v("Shared preferences", "False - Push notification key " +
+                    R.string.settings_push_notification_key);
             frequency_container.setVisibility(View.INVISIBLE);
             push_notification.setChecked(false);
         }
     }
+
+
 
 }

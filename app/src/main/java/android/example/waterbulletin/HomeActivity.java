@@ -1,10 +1,18 @@
 package android.example.waterbulletin;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,80 +23,8 @@ import android.widget.Toast;
 public class HomeActivity extends AppCompatActivity {
 
     public double current_intake = 0; // How much water (in milliliters) the user has drank today
-
-    public void updateCurrentIntake() {
-        // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        // Resets the progress text to 0ml
-        TextView current = findViewById(R.id.current_intake);
-        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
-    }
-
-    public void updateCurrentImage() {
-        // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        // Gets the minimum intake set by user (or if not set, the default)
-        int default_min_intake = getResources().getInteger(
-                R.integer.settings_min_intake_default);
-        double min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key, default_min_intake);
-
-        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
-
-        Log.v("updateCurrentImage", "" + current_intake + "/" + min_intake + " = " + current_intake / min_intake);
-        // Based on how much the user has drank compared to their minimum intake,
-        // updates the cup image
-        if (current_intake / min_intake <= 0.25) {
-            cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
-        }
-        else if (current_intake / min_intake <= 0.50) {
-            cup_of_water.setImageResource(R.drawable.cupofwater_66percent);
-        }
-        else if (current_intake / min_intake <= 0.75) {
-            cup_of_water.setImageResource(R.drawable.cupofwater_33percent);
-        } else if (current_intake / min_intake <= 1) {
-            cup_of_water.setImageResource(R.drawable.cupofwater_0percent);
-        }
-    }
-
-    public void updateMinIntake() {
-        // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        // Resets the progress text to 0ml
-        TextView current = findViewById(R.id.goal_intake);
-        int new_min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key,
-                2000);
-        Log.v("updateMinIntake", "Min intake: " + new_min_intake);
-        current.setText("" + sharedPreferences.getInt("" + R.string.settings_min_intake_key,
-                2000));
-        Log.v("updateMinIntake", "Min intake updated");
-    }
-
-    public void resetIntake() {
-        // Accesses the SharedPreferences key of current intake and resets it to 0
-        SharedPreferences sharedPreferences = getSharedPreferences(
-                getString(R.string.preference_file_key), MODE_PRIVATE);
-        SharedPreferences.Editor saved_current_intake_editor = sharedPreferences.edit();
-        saved_current_intake_editor.putInt("" + R.string.saved_current_intake, 0);
-        saved_current_intake_editor.apply();
-
-        SharedPreferences.Editor image_progress_editor = sharedPreferences.edit();
-        image_progress_editor.putInt("" + R.string.saved_image_progress, 0);
-        image_progress_editor.apply();
-
-       // Resets the progress text and image to 0ml
-        TextView current = findViewById(R.id.current_intake);
-        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake,
-                0));
-
-        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
-        cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
-    }
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +32,30 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.home);
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        createNotificationChannel();
+
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent a_intent = new Intent(this, NotificationReceiver.class);
+        a_intent.setAction("push_notification");
+
+        alarmIntent = PendingIntent.getBroadcast(this, 0, a_intent, 0);
+        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+                1000 * 60, alarmIntent);
+
+        // Will only send out push notification if user specified in Settings
+        if (!sharedPreferences.getBoolean(
+                "" + R.string.settings_push_notification_key, false)) {
+            Log.v("Shared preferences", "False - Push notification key " +
+                    R.string.settings_push_notification_key);
+            if (alarmMgr != null)
+                alarmMgr.cancel(alarmIntent);
+        }
+        else {
+            Log.v("Shared preferences", "True - Push notification key " +
+                    R.string.settings_push_notification_key);
+        }
 
         // Every time the activity is created, update the current intake so that it shows
         // the proper value
@@ -175,6 +135,96 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void updateCurrentIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Resets the progress text to 0ml
+        TextView current = findViewById(R.id.current_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake, 0));
+    }
+
+    public void updateCurrentImage() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Gets the minimum intake set by user (or if not set, the default)
+        int default_min_intake = getResources().getInteger(
+                R.integer.settings_min_intake_default);
+        double min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key, default_min_intake);
+
+        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
+
+        Log.v("updateCurrentImage", "" + current_intake + "/" + min_intake + " = " + current_intake / min_intake);
+        // Based on how much the user has drank compared to their minimum intake,
+        // updates the cup image
+        if (current_intake / min_intake <= 0.25) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
+        }
+        else if (current_intake / min_intake <= 0.50) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_66percent);
+        }
+        else if (current_intake / min_intake <= 0.75) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_33percent);
+        } else if (current_intake / min_intake <= 1) {
+            cup_of_water.setImageResource(R.drawable.cupofwater_0percent);
+        }
+    }
+
+    public void updateMinIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Resets the progress text to 0ml
+        TextView current = findViewById(R.id.goal_intake);
+        int new_min_intake = sharedPreferences.getInt("" + R.string.settings_min_intake_key,
+                2000);
+        Log.v("updateMinIntake", "Min intake: " + new_min_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.settings_min_intake_key,
+                2000));
+        Log.v("updateMinIntake", "Min intake updated");
+    }
+
+    public void resetIntake() {
+        // Accesses the SharedPreferences key of current intake and resets it to 0
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+        SharedPreferences.Editor saved_current_intake_editor = sharedPreferences.edit();
+        saved_current_intake_editor.putInt("" + R.string.saved_current_intake, 0);
+        saved_current_intake_editor.apply();
+
+        SharedPreferences.Editor image_progress_editor = sharedPreferences.edit();
+        image_progress_editor.putInt("" + R.string.saved_image_progress, 0);
+        image_progress_editor.apply();
+
+        // Resets the progress text and image to 0ml
+        TextView current = findViewById(R.id.current_intake);
+        current.setText("" + sharedPreferences.getInt("" + R.string.saved_current_intake,
+                0));
+
+        ImageView cup_of_water = findViewById(R.id.bottle_fullness);
+        cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Reminder";
+            String description = "Reminder to drink water";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("Reminder", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     @Override
