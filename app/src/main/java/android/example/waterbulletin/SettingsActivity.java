@@ -30,15 +30,53 @@ import org.w3c.dom.Text;
 
 public class SettingsActivity extends AppCompatActivity {
 
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+
+    public void updateAlarm() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Uses AlarmManager to send out a push notification every X hour(s)
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent a_intent = new Intent(this, NotificationReceiver.class);
+        a_intent.setAction("push_notification");
+
+        int frequency_in_hours = sharedPreferences.getInt(
+                "" + R.string.settings_notification_frequency_key, 1);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, a_intent, 0);
+        // Milliseconds * seconds * minutes * hours
+        alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+                1000 * 60 * frequency_in_hours, alarmIntent);
+
+        Log.v("Push notifications", "Interval in millis: " + 1000 * 60 * frequency_in_hours);
+
+        // Will only send out push notification if user specified in Settings
+        if (!sharedPreferences.getBoolean(
+                "" + R.string.settings_push_notification_key, false)) {
+            Log.v("Push notifications", "Cancelled - Push notification key returns false");
+            if (alarmMgr != null) {
+                Log.v("Push notifications", "Intent deleted");
+                alarmMgr.cancel(alarmIntent);
+            }
+        }
+        else {
+            Log.v("Push notifications", "Success - Push notification key returns true");
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), MODE_PRIVATE);
 
+        createNotificationChannel();
         updatePushNotifsVisibility();
+
+        updateAlarm();
 
         // If user taps on 'Alerts', send them to 'Alerts' page
         TextView alerts = findViewById(R.id.alerts);
@@ -118,6 +156,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 enable_notifs.apply();
                 updatePushNotifsVisibility();
+                updateAlarm();
             }
         });
 
@@ -138,6 +177,7 @@ public class SettingsActivity extends AppCompatActivity {
                 Log.v("setProgress", "Seekbar progress: " + progress);
                 frequency_editor.putInt("" + R.string.settings_notification_frequency_key, progress);
                 frequency_editor.apply();
+                updateAlarm();
 
                 TextView seekbar_progress = (TextView) findViewById(R.id.push_notifications_seekbar_progress);
                 seekbar_progress.setText("" + progress);
@@ -176,6 +216,22 @@ public class SettingsActivity extends AppCompatActivity {
                     R.string.settings_push_notification_key);
             frequency_container.setVisibility(View.INVISIBLE);
             push_notification.setChecked(false);
+        }
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Reminder";
+            String description = "Reminder to drink water";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("Reminder", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 

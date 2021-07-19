@@ -83,7 +83,8 @@
 
             <SeekBar
                 android:id="@+id/min_intake_seekbar"
-                android:layout_width="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/min_intake_desc"
                 android:max="@integer/settings_max_intake_default"
@@ -144,7 +145,8 @@
 
             <SeekBar
                 android:id="@+id/push_notifications_seekbar"
-                android:layout_width="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/push_notifications_desc"
                 android:max="@integer/settings_max_frequency"

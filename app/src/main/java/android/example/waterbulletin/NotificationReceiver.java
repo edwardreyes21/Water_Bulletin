@@ -16,8 +16,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        SharedPreferences sharedPreferences = context.getSharedPreferences(
-                "" + R.string.preference_file_key, Context.MODE_PRIVATE);
+        Log.v("Push notifications", "Intent received, sending notification");
 
         Intent tap_action = new Intent(context, HomeActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -33,7 +32,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
         notificationManager.notify(1, builder.build());
 
-        Log.v("Push notification", "Sent!");
+        Log.v("Push notifications", "Sent!");
 
         if (intent.getAction().equals("push_notification"))
             Toast.makeText(context, "Notification Received", Toast.LENGTH_SHORT).show();

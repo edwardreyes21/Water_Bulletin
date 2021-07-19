@@ -23,8 +23,7 @@ import android.widget.Toast;
 public class HomeActivity extends AppCompatActivity {
 
     public double current_intake = 0; // How much water (in milliliters) the user has drank today
-    private AlarmManager alarmMgr;
-    private PendingIntent alarmIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,30 +31,6 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.home);
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), MODE_PRIVATE);
-
-        createNotificationChannel();
-
-        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        Intent a_intent = new Intent(this, NotificationReceiver.class);
-        a_intent.setAction("push_notification");
-
-        alarmIntent = PendingIntent.getBroadcast(this, 0, a_intent, 0);
-        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
-                1000 * 60, alarmIntent);
-
-        // Will only send out push notification if user specified in Settings
-        if (!sharedPreferences.getBoolean(
-                "" + R.string.settings_push_notification_key, false)) {
-            Log.v("Shared preferences", "False - Push notification key " +
-                    R.string.settings_push_notification_key);
-            if (alarmMgr != null)
-                alarmMgr.cancel(alarmIntent);
-        }
-        else {
-            Log.v("Shared preferences", "True - Push notification key " +
-                    R.string.settings_push_notification_key);
-        }
 
         // Every time the activity is created, update the current intake so that it shows
         // the proper value
@@ -209,22 +184,6 @@ public class HomeActivity extends AppCompatActivity {
 
         ImageView cup_of_water = findViewById(R.id.bottle_fullness);
         cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
-    }
-
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Reminder";
-            String description = "Reminder to drink water";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("Reminder", name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     @Override
