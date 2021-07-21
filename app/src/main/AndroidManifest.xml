@@ -13,6 +13,10 @@
             android:name=".NotificationReceiver"
             android:enabled="true"
             android:exported="true" />
+        <receiver
+            android:name=".ResetReceiver"
+            android:enabled="true"
+            android:exported="true" />
         <activity
             android:name="android.example.waterbulletin.AlertsActivity"></activity>
         <activity

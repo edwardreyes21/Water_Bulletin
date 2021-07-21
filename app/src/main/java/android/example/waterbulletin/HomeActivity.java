@@ -20,10 +20,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 public class HomeActivity extends AppCompatActivity {
 
     public double current_intake = 0; // How much water (in milliliters) the user has drank today
-
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +39,11 @@ public class HomeActivity extends AppCompatActivity {
         // the proper value
         current_intake = sharedPreferences.getInt(
                 "" + R.string.saved_current_intake, 0);
+
         updateCurrentIntake();
         updateCurrentImage();
         updateMinIntake();
+        updateAlarm();
 
         // Catches an intent specifically designed for resetting the intake
         Intent intent = getIntent();
@@ -184,6 +189,33 @@ public class HomeActivity extends AppCompatActivity {
 
         ImageView cup_of_water = findViewById(R.id.bottle_fullness);
         cup_of_water.setImageResource(R.drawable.cupofwater_100percent);
+
+        Log.v("Reset intake", "Current intake has been reset");
+    }
+
+    public void updateAlarm() {
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), MODE_PRIVATE);
+
+        // Uses Calendar API to reset intake every 24 hrs
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Uses AlarmManager to send out a push notification every X hour(s)
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent a_intent = new Intent(this, ResetReceiver.class);
+        a_intent.putExtra("resetIntake", 1);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, a_intent, 0);
+
+        // Milliseconds * seconds * minutes * hours
+        alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, calendar.getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY, alarmIntent);
+
+        Log.v("Reset intake", "Interval in millis: " + 1000 * 30);
     }
 
     @Override
